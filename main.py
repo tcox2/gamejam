@@ -17,6 +17,9 @@ WINDOW_WIDTH: int = 800
 WINDOW_HEIGHT: int = 600
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
+SOCIAL_DISTANCE = 450
+DISTANCE_BOX = pygame.Rect(0, SOCIAL_DISTANCE, WINDOW_WIDTH, WINDOW_HEIGHT-SOCIAL_DISTANCE)
+
 PLAYER_WIDTH: int = 48
 PLAYER_HEIGHT: int = 48
 GAP_BELOW_PLAYER: int = 24
@@ -57,6 +60,10 @@ GUEST_IMAGE = pygame.transform.scale(GUEST_IMAGE_UNSCALED, (PLAYER_WIDTH * 2, PL
 
 GUEST_IMAGE_WITH_MASK_UNSCALED = pygame.image.load("with_mask.png")
 GUEST_IMAGE_WITH_MASK = pygame.transform.scale(GUEST_IMAGE_WITH_MASK_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
+
+GUEST_IMAGE_SICK_UNSCALED = pygame.image.load("sick.png")
+GUEST_IMAGE_SICK= pygame.transform.scale(GUEST_IMAGE_SICK_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
+
 suppliers = []
 SUPPLIER_WIDTH: int = 48
 SUPPLIER_HEIGHT: int = 48
@@ -132,6 +139,7 @@ while True:  # main game loop
         last_time_new_guest_visits = time
 
     # draw
+    pygame.draw.rect(screen, "white", DISTANCE_BOX)
 
     for guest in guests:
         pygame.draw.rect(
@@ -143,6 +151,8 @@ while True:  # main game loop
             screen.blit(GUEST_IMAGE, (guest.rect.x - GUEST_WIDTH / 2, guest.rect.y - GUEST_HEIGHT / 2))
         if guest.state == "with_mask":
             screen.blit(GUEST_IMAGE_WITH_MASK, (guest.rect.x - GUEST_WIDTH / 2, guest.rect.y - GUEST_HEIGHT / 2))
+        if guest.state == "sick":
+            screen.blit(GUEST_IMAGE_SICK, (guest.rect.x - GUEST_WIDTH / 2, guest.rect.y - GUEST_HEIGHT / 2))
 
     pygame.draw.rect(
         screen,
@@ -157,9 +167,9 @@ while True:  # main game loop
                 projectiles.remove(projectile)
 
     for guest in guests:
-        if guest.rect.colliderect(player):
+        if guest.rect.colliderect(DISTANCE_BOX):
             if guest.state == "without_mask":
-                player_health -= 1
+                guest.state = "sick"
 
     # render HUD
     text_surface = fontObj.render(

@@ -52,8 +52,8 @@ while True:  # main game loop
             projectiles.append(Projectile(player_x, WINDOW_HEIGHT - PLAYER_HEIGHT - GAP_BELOW_PLAYER, -1))
 
 
-    if player_x < 200:
-        player_x = 200
+    if player_x < BORDERS:
+        player_x = BORDERS
 
     if player_x >= (max_x := (WINDOW_WIDTH - BORDERS - PLAYER_WIDTH)):
         player_x = max_x

@@ -83,7 +83,7 @@ while True:  # main game loop
         projectile.rect.y += projectile.dy
         pygame.draw.rect(screen, "yellow",
                        pygame.Rect(projectile.rect.x, projectile.rect.y, projectile.rect.width, projectile.rect.height))
-        if projectile.y < - projectile.rect.height:
+        if projectile.rect.y < - projectile.rect.height:
             remove_projectiles.append(projectile)
     for projectile in remove_projectiles:
       projectiles.remove(projectile)
@@ -117,5 +117,11 @@ while True:  # main game loop
         "blue",
         (player.x, WINDOW_HEIGHT - player.height - GAP_BELOW_PLAYER, player.width, player.height)
     )
+
+    for projectile in projectiles:
+      for guest in guests:
+        if projectile.rect.colliderect(guest.rect):
+          guests.remove(guest)
+          projectiles.remove(projectile)
 
     pygame.display.update()

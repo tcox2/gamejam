@@ -35,7 +35,7 @@ PLAYER_HEIGHT: int = 48
 GAP_BELOW_PLAYER: int = 24
 
 player = pygame.Rect(WINDOW_WIDTH / 2, WINDOW_HEIGHT - PLAYER_HEIGHT - GAP_BELOW_PLAYER, PLAYER_WIDTH, PLAYER_HEIGHT)
-player_health = 999
+player_health = 1000
 time = 0
 AFTER_WHAT_TIME_NEW_GUEST_VISITS = 3000
 score = 0
@@ -75,8 +75,6 @@ class Guest:
 MASK_UNSCALED = pygame.image.load("mask.png")
 MASK_SCALED = pygame.transform.scale(MASK_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
 
-MASK_BOX_UNSCALED = pygame.image.load("mask_box.png")
-MASK_BOX_SCALED = pygame.transform.scale(MASK_BOX_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
 
 GUEST_IMAGE_UNSCALED = pygame.image.load("without_mask.png")
 GUEST_IMAGE = pygame.transform.scale(GUEST_IMAGE_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
@@ -95,6 +93,23 @@ class Supplier:
         self.dy = dy
 suppliers : list[Supplier] = []
 
+
+MASK_BOX_UNSCALED = pygame.image.load("mask_box.png")
+MASK_BOX_SCALED = pygame.transform.scale(MASK_BOX_UNSCALED, (SUPPLIER_WIDTH * 2, SUPPLIER_HEIGHT * 2))
+
+VACCINE_WIDTH: int = 48
+VACCINE_HEIGHT: int = 48
+class Vaccine:
+    def __init__(self, x, y, dy):
+        self.rect = pygame.Rect(x, y, VACCINE_WIDTH, VACCINE_HEIGHT)
+        self.dy = dy
+
+VACCINE_IMAGE_UNSCALED = pygame.image.load("vaccine.png")
+VACCINE_IMAGE = pygame.transform.scale(VACCINE_IMAGE_UNSCALED, (VACCINE_WIDTH * 2, VACCINE_HEIGHT * 2))
+vaccines : list[Vaccine] = []
+
+AFTER_WHAT_TIME_A_NEW_VACCINE_COMES = 40000
+last_time_new_vaccine_came = 0
 
 pygame.display.set_caption('Masketeer')
 fontObj = pygame.font.Font('freesansbold.ttf', 24)
@@ -175,11 +190,19 @@ while True:  # main game loop
             pygame.mixer.Sound.play(fx_sneeze)
 
 
+    time_since_last_vaccine: int = time - last_time_new_vaccine_came
+    if time_since_last_vaccine > AFTER_WHAT_TIME_A_NEW_VACCINE_COMES:
+        vaccines.append(Vaccine(random.randint(BORDERS, WINDOW_WIDTH - BORDERS - GUEST_WIDTH), 0, 1))
+        last_time_new_vaccine_came = time
+
     # draw
     pygame.draw.rect(screen, "red", DISTANCE_BOX)
 
     for supplier in suppliers:
         screen.blit(MASK_BOX_SCALED, (supplier.rect.x - SUPPLIER_WIDTH / 2, supplier.rect.y - SUPPLIER_HEIGHT / 2))
+
+    for vaccine in vaccines:
+        screen.blit(VACCINE_IMAGE, (vaccine.rect.x - VACCINE_WIDTH / 2, vaccine.rect.y - VACCINE_HEIGHT / 2))
 
     for guest in guests:
         if guest.state == "without_mask":
@@ -204,7 +227,7 @@ while True:  # main game loop
         if guest.rect.colliderect(DISTANCE_BOX):
             if guest.state == "without_mask":
                 guest.state = "sick"
-                player_health -= 33
+                player_health -= 25
                 pygame.mixer.Sound.play(fx_social_distance)
 
     for supplier in suppliers:
@@ -213,6 +236,12 @@ while True:  # main game loop
             # player has picked up mask box
             mask_count = mask_count + 10
             suppliers.remove(supplier)
+
+    for vaccine in vaccines:
+        vaccine.rect.y += vaccine.dy
+        if vaccine.rect.colliderect(player):
+            player_health += 200
+            vaccines.remove(vaccine)
 
     # render HUD
     text_surface = fontObj.render(

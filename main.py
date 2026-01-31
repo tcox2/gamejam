@@ -48,7 +48,7 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 player_x = WINDOW_WIDTH / 2
 WHITE = (255, 255, 255)
-
+LIGHT_GREY = (100, 100, 100)
 GREEN = (0, 255, 0)
 
 BLUE = (0, 0, 128)
@@ -82,7 +82,7 @@ while True:  # main game loop
     if player_x >= (max_x := (WINDOW_WIDTH - BORDERS - PLAYER_WIDTH)):
         player_x = max_x
 
-    pygame.draw.rect(screen, (100, 100, 100),
+    pygame.draw.rect(screen, LIGHT_GREY,
                      pygame.Rect(0 + BORDERS, 0, WINDOW_WIDTH - BORDERS - BORDERS, WINDOW_HEIGHT))
 
     remove_projectiles = []

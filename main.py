@@ -43,7 +43,7 @@ AFTER_WHAT_TIME_NEW_GUEST_VISITS = 3000
 PLAYER_IMAGE_WITHOUT_FIRE_UNSCALED = pygame.image.load("without_fire.png")
 PLAYER_IMAGE_WITHOUT_FIRE = pygame.transform.scale(PLAYER_IMAGE_WITHOUT_FIRE_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
 
-PLAYER_IMAGE_WITH_FIRE_UNSCALED = pygame.image.load("with_fire.png")
+PLAYER_IMAGE_WITH_FIRE_UNSCALED = pygame.image.load("with_fire_1.png")
 PLAYER_IMAGE_WITH_FIRE = pygame.transform.scale(PLAYER_IMAGE_WITH_FIRE_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
 
 
@@ -71,6 +71,9 @@ class Guest:
         self.dy = dy
         self.state = "without_mask"
 
+# drop after 20-X guests (every 17?)
+MASK_UNSCALED = pygame.image.load("mask.png")
+MASK_SCALED = pygame.transform.scale(MASK_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
 
 GUEST_IMAGE_UNSCALED = pygame.image.load("without_mask.png")
 GUEST_IMAGE = pygame.transform.scale(GUEST_IMAGE_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
@@ -81,15 +84,13 @@ GUEST_IMAGE_WITH_MASK = pygame.transform.scale(GUEST_IMAGE_WITH_MASK_UNSCALED, (
 GUEST_IMAGE_SICK_UNSCALED = pygame.image.load("sick.png")
 GUEST_IMAGE_SICK= pygame.transform.scale(GUEST_IMAGE_SICK_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
 
-suppliers = []
 SUPPLIER_WIDTH: int = 48
 SUPPLIER_HEIGHT: int = 48
-
-
 class Supplier:
     def __init__(self, x, y, dy):
         self.rect = pygame.Rect(x, y, SUPPLIER_WIDTH, SUPPLIER_HEIGHT)
         self.dy = dy
+suppliers : list[Supplier] = []
 
 
 pygame.display.set_caption('Masketeer')
@@ -118,6 +119,8 @@ while True:  # main game loop
             mask_count = mask_count - 1
             projectiles.append(Projectile(player.x, WINDOW_HEIGHT - player.height - GAP_BELOW_PLAYER, -5))
             pygame.mixer.Sound.play(fx_shoot)
+            if mask_count <= 2:
+                suppliers.append(Supplier(player.x, -SUPPLIER_HEIGHT, 3))
 
     if player.x < BORDERS:
         player.x = BORDERS
@@ -133,9 +136,9 @@ while True:  # main game loop
     remove_projectiles = []
     for projectile in projectiles:
         projectile.rect.y += projectile.dy
-        pygame.draw.rect(screen, "yellow",
-                         pygame.Rect(projectile.rect.x, projectile.rect.y, projectile.rect.width,
-                                     projectile.rect.height))
+        screen.blit(MASK_SCALED, (projectile.rect.x - (PROJECTILE_WIDTH/2),
+                                  projectile.rect.y - (PROJECTILE_HEIGHT/2)
+                                  ))
         if projectile.rect.y < - projectile.rect.height:
             remove_projectiles.append(projectile)
     for projectile in remove_projectiles:
@@ -166,6 +169,9 @@ while True:  # main game loop
     # draw
     pygame.draw.rect(screen, "red", DISTANCE_BOX)
 
+    for supplier in suppliers:
+        screen.blit(MASK_SCALED, (supplier.rect.x - SUPPLIER_WIDTH / 2, supplier.rect.y - SUPPLIER_HEIGHT / 2))
+
     for guest in guests:
         if guest.state == "without_mask":
             screen.blit(GUEST_IMAGE, (guest.rect.x - GUEST_WIDTH / 2, guest.rect.y - GUEST_HEIGHT / 2))
@@ -191,6 +197,11 @@ while True:  # main game loop
                 guest.state = "sick"
                 player_health -= 33
                 pygame.mixer.Sound.play(fx_social_distance)
+
+    for supplier in suppliers:
+        supplier.rect.y += supplier.dy
+        # detect player hits supplier here
+        pass
 
     # render HUD
     text_surface = fontObj.render(

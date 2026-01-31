@@ -22,6 +22,7 @@ PLAYER_HEIGHT: int = 48
 GAP_BELOW_PLAYER: int = 24
 
 player = pygame.Rect(WINDOW_WIDTH / 2, WINDOW_HEIGHT - PLAYER_HEIGHT - GAP_BELOW_PLAYER, PLAYER_WIDTH, PLAYER_HEIGHT)
+player_health = 999
 time = 0
 AFTER_WHAT_TIME_NEW_GUEST_VISITS = 3000
 BORDERS = 200
@@ -48,11 +49,14 @@ class Guest:
     def __init__(self, x, y, dy):
         self.rect = pygame.Rect(x, y, GUEST_WIDTH, GUEST_HEIGHT)
         self.dy = dy
+        self.state = "without_mask"
 
 
-GUEST_IMAGE_UNSCALED = pygame.image.load("with_mask.png")
-GUEST_IMAGE = pygame.transform.scale(GUEST_IMAGE_UNSCALED, (100, 100))
+GUEST_IMAGE_UNSCALED = pygame.image.load("without_mask.png")
+GUEST_IMAGE = pygame.transform.scale(GUEST_IMAGE_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
 
+GUEST_IMAGE_WITH_MASK_UNSCALED = pygame.image.load("with_mask.png")
+GUEST_IMAGE_WITH_MASK = pygame.transform.scale(GUEST_IMAGE_WITH_MASK_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
 suppliers = []
 SUPPLIER_WIDTH: int = 48
 SUPPLIER_HEIGHT: int = 48
@@ -135,7 +139,10 @@ while True:  # main game loop
             "red",
             (guest.rect.x, guest.rect.y, guest.rect.width, guest.rect.height)
         )
-        screen.blit(GUEST_IMAGE, (guest.rect.x, guest.rect.y))
+        if guest.state == "without_mask":
+            screen.blit(GUEST_IMAGE, (guest.rect.x - GUEST_WIDTH / 2, guest.rect.y - GUEST_HEIGHT / 2))
+        if guest.state == "with_mask":
+            screen.blit(GUEST_IMAGE_WITH_MASK, (guest.rect.x - GUEST_WIDTH / 2, guest.rect.y - GUEST_HEIGHT / 2))
 
     pygame.draw.rect(
         screen,
@@ -146,13 +153,13 @@ while True:  # main game loop
     for projectile in projectiles:
         for guest in guests:
             if projectile.rect.colliderect(guest.rect):
-                guests.remove(guest)
+                guest.state = "with_mask"
                 projectiles.remove(projectile)
 
     for guest in guests:
         if guest.rect.colliderect(player):
-            pygame.quit()
-            sys.exit()
+            if guest.state == "without_mask":
+                player_health -= 1
 
     # render HUD
     text_surface = fontObj.render(
@@ -161,5 +168,12 @@ while True:  # main game loop
         (255, 255, 255)  # text color
     )
     screen.blit(text_surface, (10, 20))
+
+    health_surface = fontObj.render(
+        f"Health: {player_health}",
+        True,  # antialias
+        (255, 255, 255)  # text color
+    )
+    screen.blit(health_surface, (10, 60))
 
     pygame.display.update()

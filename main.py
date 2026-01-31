@@ -170,6 +170,7 @@ while True:  # main game loop
         if guest.rect.colliderect(DISTANCE_BOX):
             if guest.state == "without_mask":
                 guest.state = "sick"
+                player_health -= 33
 
     # render HUD
     text_surface = fontObj.render(

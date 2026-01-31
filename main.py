@@ -1,5 +1,3 @@
-from ctypes.macholib.dylib import dylib_info
-
 import pygame, sys
 from pygame.locals import *
 import random
@@ -9,6 +7,7 @@ DEBUG: bool = False
 clock = pygame.time.Clock()
 
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 LIGHT_GREY = (100, 100, 100)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 128)
@@ -32,24 +31,43 @@ last_time_new_guest_visits = 0
 projectiles = []
 PROJECTILE_WIDTH: int = 48
 PROJECTILE_HEIGHT: int = 48
+
+
 class Projectile:
-  def __init__(self, x, y, dy):
-    self.rect = pygame.Rect(x, y, PROJECTILE_WIDTH, PROJECTILE_HEIGHT)
-    self.dy = dy
+    def __init__(self, x, y, dy):
+        self.rect = pygame.Rect(x, y, PROJECTILE_WIDTH, PROJECTILE_HEIGHT)
+        self.dy = dy
 
 
 guests = []
 GUEST_WIDTH: int = 48
 GUEST_HEIGHT: int = 48
+
+
 class Guest:
-  def __init__(self, x, y, dy):
-    self.rect = pygame.Rect(x, y, GUEST_WIDTH, GUEST_HEIGHT)
-    self.dy = dy
+    def __init__(self, x, y, dy):
+        self.rect = pygame.Rect(x, y, GUEST_WIDTH, GUEST_HEIGHT)
+        self.dy = dy
+
+
+GUEST_IMAGE_UNSCALED = pygame.image.load("with_mask.png")
+GUEST_IMAGE = pygame.transform.scale(GUEST_IMAGE_UNSCALED, (100, 100))
+
+suppliers = []
+SUPPLIER_WIDTH: int = 48
+SUPPLIER_HEIGHT: int = 48
+
+
+class Supplier:
+    def __init__(self, x, y, dy):
+        self.rect = pygame.Rect(x, y, SUPPLIER_WIDTH, SUPPLIER_HEIGHT)
+        self.dy = dy
 
 
 pygame.display.set_caption('Masketeer')
 fontObj = pygame.font.Font('freesansbold.ttf', 32)
 
+mask_count: int = 10
 
 while True:  # main game loop
     dt = clock.tick(60)
@@ -68,9 +86,9 @@ while True:  # main game loop
         player.x += 10
     if keys[K_SPACE]:
         # shoot mask
-        if not projectiles:
+        if not projectiles and mask_count > 0:
+            mask_count = mask_count - 1
             projectiles.append(Projectile(player.x, WINDOW_HEIGHT - player.height - GAP_BELOW_PLAYER, -5))
-
 
     if player.x < BORDERS:
         player.x = BORDERS
@@ -78,6 +96,8 @@ while True:  # main game loop
     if player.x >= (max_x := (WINDOW_WIDTH - BORDERS - player.width)):
         player.x = max_x
 
+    pygame.draw.rect(screen, BLACK,
+                     pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.draw.rect(screen, LIGHT_GREY,
                      pygame.Rect(0 + BORDERS, 0, WINDOW_WIDTH - BORDERS - BORDERS, WINDOW_HEIGHT))
 
@@ -85,35 +105,37 @@ while True:  # main game loop
     for projectile in projectiles:
         projectile.rect.y += projectile.dy
         pygame.draw.rect(screen, "yellow",
-                       pygame.Rect(projectile.rect.x, projectile.rect.y, projectile.rect.width, projectile.rect.height))
+                         pygame.Rect(projectile.rect.x, projectile.rect.y, projectile.rect.width,
+                                     projectile.rect.height))
         if projectile.rect.y < - projectile.rect.height:
             remove_projectiles.append(projectile)
     for projectile in remove_projectiles:
-      projectiles.remove(projectile)
+        projectiles.remove(projectile)
 
     time = pygame.time.get_ticks()
 
     remove_guests = []
     for guest in guests:
-      guest.rect.y += guest.dy
-      if guest.rect.y > WINDOW_HEIGHT + guest.rect.height:  # hit bottom of screen
-        remove_guests.append(guest)
+        guest.rect.y += guest.dy
+        if guest.rect.y > WINDOW_HEIGHT + guest.rect.height:  # hit bottom of screen
+            remove_guests.append(guest)
     for guest in remove_guests:
-      guests.remove(guest)
+        guests.remove(guest)
 
-    time_since_last_guest : int = time - last_time_new_guest_visits
+    time_since_last_guest: int = time - last_time_new_guest_visits
     if time_since_last_guest > AFTER_WHAT_TIME_NEW_GUEST_VISITS:
-      guests.append(Guest(random.randint(BORDERS, WINDOW_WIDTH-BORDERS-GUEST_WIDTH), 0, 1))
-      last_time_new_guest_visits = time
+        guests.append(Guest(random.randint(BORDERS, WINDOW_WIDTH - BORDERS - GUEST_WIDTH), 0, 1))
+        last_time_new_guest_visits = time
 
     # draw
 
     for guest in guests:
-      pygame.draw.rect(
-        screen,
-        "red",
-        (guest.rect.x, guest.rect.y, guest.rect.width, guest.rect.height)
-      )
+        pygame.draw.rect(
+            screen,
+            "red",
+            (guest.rect.x, guest.rect.y, guest.rect.width, guest.rect.height)
+        )
+        screen.blit(GUEST_IMAGE, (guest.rect.x, guest.rect.y))
 
     pygame.draw.rect(
         screen,
@@ -122,15 +144,22 @@ while True:  # main game loop
     )
 
     for projectile in projectiles:
-      for guest in guests:
-        if projectile.rect.colliderect(guest.rect):
-          guests.remove(guest)
-          projectiles.remove(projectile)
+        for guest in guests:
+            if projectile.rect.colliderect(guest.rect):
+                guests.remove(guest)
+                projectiles.remove(projectile)
 
     for guest in guests:
-      if guest.rect.colliderect(player):
-        pygame.quit()
-        sys.exit()
+        if guest.rect.colliderect(player):
+            pygame.quit()
+            sys.exit()
 
+    # render HUD
+    text_surface = fontObj.render(
+        f"Masks: {mask_count}",
+        True,  # antialias
+        (255, 255, 255)  # text color
+    )
+    screen.blit(text_surface, (10, 20))
 
     pygame.display.update()

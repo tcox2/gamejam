@@ -5,7 +5,7 @@ import random
 DEBUG: bool = False
 pygame.mixer.init(frequency=16000)
 pygame.mixer.music.load("bgm.mp3")
-#pygame.mixer.music.play()
+pygame.mixer.music.play()
 
 fx_shoot = pygame.mixer.Sound("shoot.mp3")
 fx_social_distance = pygame.mixer.Sound("Pass social Distance.mp3")
@@ -35,7 +35,7 @@ PLAYER_HEIGHT: int = 48
 GAP_BELOW_PLAYER: int = 24
 
 player = pygame.Rect(WINDOW_WIDTH / 2, WINDOW_HEIGHT - PLAYER_HEIGHT - GAP_BELOW_PLAYER, PLAYER_WIDTH, PLAYER_HEIGHT)
-player_health = 1000
+player_health = 300
 time = 0
 AFTER_WHAT_TIME_NEW_GUEST_VISITS = 3000
 score = 0

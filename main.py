@@ -2,9 +2,15 @@ import pygame, sys
 from pygame.locals import *
 
 pygame.init()
-
 WINDOW_WIDTH: int = 800
 WINDOW_HEIGHT: int = 600
+
+PLAYER_WIDTH: int = 48
+PLAYER_HEIGHT: int = 48
+GAP_BELOW_PLAYER: int = 24
+
+BORDERS = 200
+
 
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
@@ -13,7 +19,7 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 player_x = WINDOW_WIDTH / 2
 
 
-pygame.display.set_caption('Hello World!')
+pygame.display.set_caption('Masketeer')
 
 while True: # main game loop
 
@@ -30,15 +36,19 @@ while True: # main game loop
   if keys[K_RIGHT]:
     player_x += 1
 
-  if player_x < 0:
-    player_x = 0
+  if player_x < 200:
+    player_x = 200
 
-  if player_x >= WINDOW_WIDTH:
-    player_x = WINDOW_WIDTH
+  if player_x >= (max_x := (WINDOW_WIDTH - BORDERS - PLAYER_WIDTH)):
+    player_x = max_x
 
-  pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
+  pygame.draw.rect(screen, (100, 100, 100), pygame.Rect(0 + BORDERS, 0 , WINDOW_WIDTH - BORDERS -BORDERS, WINDOW_HEIGHT))
 
-  pygame.draw.circle(screen, "red", (player_x, 100), 100)
+  pygame.draw.rect(
+    screen,
+    "blue",
+    (player_x, WINDOW_HEIGHT - PLAYER_HEIGHT - GAP_BELOW_PLAYER, PLAYER_WIDTH, PLAYER_HEIGHT)
+  )
 
   pygame.display.update()
 

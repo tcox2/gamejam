@@ -17,6 +17,7 @@ clock = pygame.time.Clock()
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 LIGHT_GREY = (100, 100, 100)
+DARK_GREY = (20, 20, 20)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 128)
 
@@ -24,6 +25,7 @@ pygame.init()
 WINDOW_WIDTH: int = 800
 WINDOW_HEIGHT: int = 600
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+
 BORDERS = 200
 SOCIAL_DISTANCE = 450
 DISTANCE_BOX = pygame.Rect(BORDERS, SOCIAL_DISTANCE, WINDOW_WIDTH - BORDERS * 2, 4)
@@ -36,6 +38,13 @@ player = pygame.Rect(WINDOW_WIDTH / 2, WINDOW_HEIGHT - PLAYER_HEIGHT - GAP_BELOW
 player_health = 999
 time = 0
 AFTER_WHAT_TIME_NEW_GUEST_VISITS = 3000
+
+
+PLAYER_IMAGE_WITHOUT_FIRE_UNSCALED = pygame.image.load("without_fire.png")
+PLAYER_IMAGE_WITHOUT_FIRE = pygame.transform.scale(PLAYER_IMAGE_WITHOUT_FIRE_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
+
+PLAYER_IMAGE_WITH_FIRE_UNSCALED = pygame.image.load("with_fire.png")
+PLAYER_IMAGE_WITH_FIRE = pygame.transform.scale(PLAYER_IMAGE_WITH_FIRE_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
 
 
 last_time_new_guest_visits = 0
@@ -118,7 +127,7 @@ while True:  # main game loop
 
     pygame.draw.rect(screen, BLACK,
                      pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
-    pygame.draw.rect(screen, LIGHT_GREY,
+    pygame.draw.rect(screen, DARK_GREY,
                      pygame.Rect(0 + BORDERS, 0, WINDOW_WIDTH - BORDERS - BORDERS, WINDOW_HEIGHT))
 
     remove_projectiles = []
@@ -148,9 +157,9 @@ while True:  # main game loop
         last_time_new_guest_visits = time
         random_symptom = random.randint(0, 100)
         print(random_symptom)
-        if random_symptom > 66:
+        if random_symptom > 80:
             pygame.mixer.Sound.play(fx_cough)
-        elif random_symptom > 33:
+        elif random_symptom > 60:
             pygame.mixer.Sound.play(fx_sneeze)
 
 
@@ -158,11 +167,6 @@ while True:  # main game loop
     pygame.draw.rect(screen, "red", DISTANCE_BOX)
 
     for guest in guests:
-        pygame.draw.rect(
-            screen,
-            "red",
-            (guest.rect.x, guest.rect.y, guest.rect.width, guest.rect.height)
-        )
         if guest.state == "without_mask":
             screen.blit(GUEST_IMAGE, (guest.rect.x - GUEST_WIDTH / 2, guest.rect.y - GUEST_HEIGHT / 2))
         if guest.state == "with_mask":
@@ -170,11 +174,10 @@ while True:  # main game loop
         if guest.state == "sick":
             screen.blit(GUEST_IMAGE_SICK, (guest.rect.x - GUEST_WIDTH / 2, guest.rect.y - GUEST_HEIGHT / 2))
 
-    pygame.draw.rect(
-        screen,
-        "blue",
-        player
-    )
+    if not projectiles:
+        screen.blit(PLAYER_IMAGE_WITHOUT_FIRE,(player.x - PLAYER_WIDTH / 2, player.y - PLAYER_HEIGHT / 2))
+    else:
+        screen.blit(PLAYER_IMAGE_WITH_FIRE, (player.x - PLAYER_WIDTH / 2, player.y - PLAYER_HEIGHT / 2))
 
     for projectile in projectiles:
         for guest in guests:

@@ -6,6 +6,12 @@ DEBUG: bool = False
 pygame.mixer.init(frequency=16000)
 pygame.mixer.music.load("bgm.mp3")
 #pygame.mixer.music.play()
+
+fx_shoot = pygame.mixer.Sound("Shooting Masks.mp3")
+fx_social_distance = pygame.mixer.Sound("Pass social Distance.mp3")
+fx_cough = pygame.mixer.Sound("cough.mp3")
+fx_sneeze = pygame.mixer.Sound("sneeze.mp3")
+
 clock = pygame.time.Clock()
 
 WHITE = (255, 255, 255)
@@ -102,6 +108,7 @@ while True:  # main game loop
         if not projectiles and mask_count > 0:
             mask_count = mask_count - 1
             projectiles.append(Projectile(player.x, WINDOW_HEIGHT - player.height - GAP_BELOW_PLAYER, -5))
+            pygame.mixer.Sound.play(fx_shoot)
 
     if player.x < BORDERS:
         player.x = BORDERS
@@ -139,6 +146,13 @@ while True:  # main game loop
     if time_since_last_guest > AFTER_WHAT_TIME_NEW_GUEST_VISITS:
         guests.append(Guest(random.randint(BORDERS, WINDOW_WIDTH - BORDERS - GUEST_WIDTH), 0, 1))
         last_time_new_guest_visits = time
+        random_symptom = random.randint(0, 100)
+        print(random_symptom)
+        if random_symptom > 66:
+            pygame.mixer.Sound.play(fx_cough)
+        elif random_symptom > 33:
+            pygame.mixer.Sound.play(fx_sneeze)
+
 
     # draw
     pygame.draw.rect(screen, "red", DISTANCE_BOX)
@@ -173,6 +187,7 @@ while True:  # main game loop
             if guest.state == "without_mask":
                 guest.state = "sick"
                 player_health -= 33
+                pygame.mixer.Sound.play(fx_social_distance)
 
     # render HUD
     text_surface = fontObj.render(

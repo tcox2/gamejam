@@ -16,9 +16,9 @@ pygame.init()
 WINDOW_WIDTH: int = 800
 WINDOW_HEIGHT: int = 600
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-
+BORDERS = 200
 SOCIAL_DISTANCE = 450
-DISTANCE_BOX = pygame.Rect(0, SOCIAL_DISTANCE, WINDOW_WIDTH, WINDOW_HEIGHT-SOCIAL_DISTANCE)
+DISTANCE_BOX = pygame.Rect(BORDERS, SOCIAL_DISTANCE, WINDOW_WIDTH - BORDERS * 2, 4)
 
 PLAYER_WIDTH: int = 48
 PLAYER_HEIGHT: int = 48
@@ -28,7 +28,7 @@ player = pygame.Rect(WINDOW_WIDTH / 2, WINDOW_HEIGHT - PLAYER_HEIGHT - GAP_BELOW
 player_health = 999
 time = 0
 AFTER_WHAT_TIME_NEW_GUEST_VISITS = 3000
-BORDERS = 200
+
 
 last_time_new_guest_visits = 0
 
@@ -139,7 +139,7 @@ while True:  # main game loop
         last_time_new_guest_visits = time
 
     # draw
-    pygame.draw.rect(screen, "white", DISTANCE_BOX)
+    pygame.draw.rect(screen, "red", DISTANCE_BOX)
 
     for guest in guests:
         pygame.draw.rect(

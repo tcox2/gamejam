@@ -38,6 +38,7 @@ player = pygame.Rect(WINDOW_WIDTH / 2, WINDOW_HEIGHT - PLAYER_HEIGHT - GAP_BELOW
 player_health = 999
 time = 0
 AFTER_WHAT_TIME_NEW_GUEST_VISITS = 3000
+score = 0
 
 
 PLAYER_IMAGE_WITHOUT_FIRE_UNSCALED = pygame.image.load("without_fire.png")
@@ -96,12 +97,18 @@ suppliers : list[Supplier] = []
 
 
 pygame.display.set_caption('Masketeer')
-fontObj = pygame.font.Font('freesansbold.ttf', 32)
+fontObj = pygame.font.Font('freesansbold.ttf', 24)
 
 mask_count: int = 10
 
 while True:  # main game loop
     dt = clock.tick(60)
+    score = score + 1
+
+    if player_health <= 0:
+        print (f"Your score was {score}!")
+        pygame.quit()
+        sys.exit()
 
     # events
     for event in pygame.event.get():
@@ -221,5 +228,12 @@ while True:  # main game loop
         (255, 255, 255)  # text color
     )
     screen.blit(health_surface, (10, 60))
+
+    score_surface = fontObj.render(
+        f"Score: {score:,}",
+        True,  # antialias
+        (255, 255, 255)  # text color
+    )
+    screen.blit(score_surface, (10, 100))
 
     pygame.display.update()

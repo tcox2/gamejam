@@ -20,7 +20,7 @@ PLAYER_WIDTH: int = 48
 PLAYER_HEIGHT: int = 48
 GAP_BELOW_PLAYER: int = 24
 
-player = pygame.Rect(WINDOW_WIDTH / 2, PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT)
+player = pygame.Rect(WINDOW_WIDTH / 2, WINDOW_HEIGHT - PLAYER_HEIGHT - GAP_BELOW_PLAYER, PLAYER_WIDTH, PLAYER_HEIGHT)
 time = 0
 AFTER_WHAT_TIME_NEW_GUEST_VISITS = 3000
 BORDERS = 200
@@ -115,7 +115,7 @@ while True:  # main game loop
     pygame.draw.rect(
         screen,
         "blue",
-        (player.x, WINDOW_HEIGHT - player.height - GAP_BELOW_PLAYER, player.width, player.height)
+        player
     )
 
     for projectile in projectiles:
@@ -123,5 +123,11 @@ while True:  # main game loop
         if projectile.rect.colliderect(guest.rect):
           guests.remove(guest)
           projectiles.remove(projectile)
+
+    for guest in guests:
+      if guest.rect.colliderect(player):
+        pygame.quit()
+        sys.exit()
+
 
     pygame.display.update()

@@ -7,7 +7,7 @@ pygame.mixer.init(frequency=16000)
 pygame.mixer.music.load("bgm.mp3")
 #pygame.mixer.music.play()
 
-fx_shoot = pygame.mixer.Sound("Shooting Masks.mp3")
+fx_shoot = pygame.mixer.Sound("shoot.mp3")
 fx_social_distance = pygame.mixer.Sound("Pass social Distance.mp3")
 fx_cough = pygame.mixer.Sound("cough.mp3")
 fx_sneeze = pygame.mixer.Sound("sneeze.mp3")
@@ -71,9 +71,11 @@ class Guest:
         self.dy = dy
         self.state = "without_mask"
 
-# drop after 20-X guests (every 17?)
 MASK_UNSCALED = pygame.image.load("mask.png")
 MASK_SCALED = pygame.transform.scale(MASK_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
+
+MASK_BOX_UNSCALED = pygame.image.load("mask_box.png")
+MASK_BOX_SCALED = pygame.transform.scale(MASK_BOX_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
 
 GUEST_IMAGE_UNSCALED = pygame.image.load("without_mask.png")
 GUEST_IMAGE = pygame.transform.scale(GUEST_IMAGE_UNSCALED, (PLAYER_WIDTH * 2, PLAYER_HEIGHT * 2))
@@ -170,7 +172,7 @@ while True:  # main game loop
     pygame.draw.rect(screen, "red", DISTANCE_BOX)
 
     for supplier in suppliers:
-        screen.blit(MASK_SCALED, (supplier.rect.x - SUPPLIER_WIDTH / 2, supplier.rect.y - SUPPLIER_HEIGHT / 2))
+        screen.blit(MASK_BOX_SCALED, (supplier.rect.x - SUPPLIER_WIDTH / 2, supplier.rect.y - SUPPLIER_HEIGHT / 2))
 
     for guest in guests:
         if guest.state == "without_mask":
@@ -200,8 +202,10 @@ while True:  # main game loop
 
     for supplier in suppliers:
         supplier.rect.y += supplier.dy
-        # detect player hits supplier here
-        pass
+        if supplier.rect.colliderect(player):
+            # player has picked up mask box
+            mask_count = mask_count + 10
+            suppliers.remove(supplier)
 
     # render HUD
     text_surface = fontObj.render(

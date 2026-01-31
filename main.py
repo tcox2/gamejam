@@ -12,7 +12,9 @@ PROJECTILE_WIDTH: int = 48
 PROJECTILE_HEIGHT: int = 48
 
 GAP_BELOW_PLAYER: int = 24
-
+TIME = 0
+AFTER_WHAT_TIME_NEW_GUEST_VISITS = 3000
+LAST_TIME_NEW_QUEST_VISITS = 0
 BORDERS = 200
 
 
@@ -29,8 +31,14 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 # space invader style character at bottom
 
 player_x = WINDOW_WIDTH / 2
+WHITE = (255, 255, 255)
 
+GREEN = (0, 255, 0)
+
+BLUE = (0, 0, 128)
 pygame.display.set_caption('Masketeer')
+fontObj = pygame.font.Font('freesansbold.ttf', 32)
+
 
 while True:  # main game loop
 
@@ -70,6 +78,18 @@ while True:  # main game loop
             remove_projectiles.append(projectile)
     for projectile in remove_projectiles:
       projectiles.remove(projectile)
+
+    TIME = pygame.time.get_ticks()
+    textSurfaceObj = fontObj.render(str(TIME), True, GREEN, BLUE)
+    textRectObj = textSurfaceObj.get_rect()
+    textRectObj.center = (200, 150)
+    screen.blit(textSurfaceObj, textRectObj)
+
+    delta = TIME - LAST_TIME_NEW_QUEST_VISITS
+    print(TIME, LAST_TIME_NEW_QUEST_VISITS, delta)
+    if delta > AFTER_WHAT_TIME_NEW_GUEST_VISITS:
+      LAST_TIME_NEW_QUEST_VISITS = TIME
+
 
     pygame.draw.rect(
         screen,

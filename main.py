@@ -6,6 +6,8 @@ import random
 
 DEBUG: bool = False
 
+clock = pygame.time.Clock()
+
 WHITE = (255, 255, 255)
 LIGHT_GREY = (100, 100, 100)
 GREEN = (0, 255, 0)
@@ -50,6 +52,7 @@ fontObj = pygame.font.Font('freesansbold.ttf', 32)
 
 
 while True:  # main game loop
+    dt = clock.tick(60)
 
     # events
     for event in pygame.event.get():
@@ -60,13 +63,13 @@ while True:  # main game loop
     # key handling
     keys = pygame.key.get_pressed()
     if keys[K_LEFT]:
-        player.x -= 1
+        player.x -= 10
     if keys[K_RIGHT]:
-        player.x += 1
+        player.x += 10
     if keys[K_SPACE]:
         # shoot mask
         if not projectiles:
-            projectiles.append(Projectile(player.x, WINDOW_HEIGHT - player.height - GAP_BELOW_PLAYER, -1))
+            projectiles.append(Projectile(player.x, WINDOW_HEIGHT - player.height - GAP_BELOW_PLAYER, -5))
 
 
     if player.x < BORDERS:

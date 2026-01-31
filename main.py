@@ -3,7 +3,9 @@ from pygame.locals import *
 import random
 
 DEBUG: bool = False
-
+pygame.mixer.init(frequency=16000)
+pygame.mixer.music.load("bgm.mp3")
+#pygame.mixer.music.play()
 clock = pygame.time.Clock()
 
 WHITE = (255, 255, 255)

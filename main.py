@@ -39,6 +39,7 @@ player_health = 300
 time = 0
 AFTER_WHAT_TIME_NEW_GUEST_VISITS = 3000
 score = 0
+speed = 0
 game_start_time = 0 # start time is set on game start
 
 
@@ -128,7 +129,7 @@ global scene
 scene = 'start'
 
 def start():
-    global scene, score, player_health, last_time_new_guest_visits, last_time_new_vaccine_came, mask_count, game_start_time
+    global scene, score, player_health, last_time_new_guest_visits, last_time_new_vaccine_came, mask_count, game_start_time, speed
     # handle events (also listen for keydown to reliably catch presses)
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -140,6 +141,7 @@ def start():
                 score = 0
                 player_health = 300
                 game_start_time = pygame.time.get_ticks()
+                speed = 1
                 last_time_new_guest_visits = 0
                 last_time_new_vaccine_came = 0
                 mask_count = 10
@@ -316,6 +318,13 @@ def game():
         (255, 255, 255)  # text color
     )
     screen.blit(time_surface, (10, 140))
+
+    speed_surface = fontObj.render(
+        f"Speed: {speed}",
+        True,  # antialias
+        (255, 255, 255)  # text color
+    )
+    screen.blit(speed_surface, (10, 180))
 
     pygame.display.update()
 

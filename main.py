@@ -116,8 +116,46 @@ fontObj = pygame.font.Font('freesansbold.ttf', 24)
 
 mask_count: int = 10
 
-while True:  # main game loop
+global scene
+scene = 'start'
+
+def start():
+    global scene, score, player_health, last_time_new_guest_visits, last_time_new_vaccine_came, mask_count
+    # handle events (also listen for keydown to reliably catch presses)
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == KEYDOWN:
+            if event.key == K_SPACE:
+                # reset game state and switch to game scene
+                score = 0
+                player_health = 300
+                last_time_new_guest_visits = 0
+                last_time_new_vaccine_came = 0
+                mask_count = 10
+                guests.clear()
+                projectiles.clear()
+                suppliers.clear()
+                vaccines.clear()
+                scene = 'game'
+                return
+
+    # draw a simple start screen so players know to press SPACE
+    screen.fill(BLACK)
+    title_surface = fontObj.render('Masketeer', True, WHITE)
+    instr_surface = fontObj.render('Press SPACE to start', True, WHITE)
+    screen.blit(title_surface, (WINDOW_WIDTH // 2 - title_surface.get_width() // 2,
+                                WINDOW_HEIGHT // 2 - 40))
+    screen.blit(instr_surface, (WINDOW_WIDTH // 2 - instr_surface.get_width() // 2,
+                                WINDOW_HEIGHT // 2 + 10))
+    pygame.display.update()
+    clock.tick(60)
+        
+
+def game():
     dt = clock.tick(60)
+    global score, player_health, last_time_new_guest_visits, last_time_new_vaccine_came, mask_count
     score = score + 1
 
     if player_health <= 0:
@@ -146,6 +184,10 @@ while True:  # main game loop
             if mask_count <= 2:
                 suppliers.append(Supplier(player.x, -SUPPLIER_HEIGHT, 3))
 
+    if keys[K_ESCAPE]:
+        scene = 'start'
+        return
+    
     if player.x < BORDERS:
         player.x = BORDERS
 
@@ -266,3 +308,15 @@ while True:  # main game loop
     screen.blit(score_surface, (10, 100))
 
     pygame.display.update()
+
+def main():
+    global scene
+    scene = 'start'
+    while True:  # main game loop
+        if scene == 'start':
+            start()
+        elif scene == 'game':
+            game()
+    
+
+main()

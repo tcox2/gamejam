@@ -116,6 +116,8 @@ last_time_new_vaccine_came = 0
 PAUSE_IMAGE_UNSCALED = pygame.image.load("game paused.png")
 PAUSE_IMAGE = pygame.transform.scale(PAUSE_IMAGE_UNSCALED, (800, 600))
 
+START_IMAGE_UNSCALED = pygame.image.load("instructions.png")
+START_IMAGE = pygame.transform.scale(START_IMAGE_UNSCALED, (800, 600))
 
 
 
@@ -152,13 +154,8 @@ def start():
                 return
 
     # draw a simple start screen so players know to press SPACE
-    screen.fill(BLACK)
-    title_surface = fontObj.render('Masketeer', True, WHITE)
-    instr_surface = fontObj.render('Press SPACE to start', True, WHITE)
-    screen.blit(title_surface, (WINDOW_WIDTH // 2 - title_surface.get_width() // 2,
-                                WINDOW_HEIGHT // 2 - 40))
-    screen.blit(instr_surface, (WINDOW_WIDTH // 2 - instr_surface.get_width() // 2,
-                                WINDOW_HEIGHT // 2 + 10))
+
+    screen.blit(START_IMAGE, (0,0))
     pygame.display.update()
     clock.tick(60)
         
@@ -355,7 +352,7 @@ def pause():
     screen.blit(PAUSE_IMAGE, (WINDOW_WIDTH // 2 - PAUSE_IMAGE.get_width() // 2,
                               WINDOW_HEIGHT // 2 - PAUSE_IMAGE.get_height() // 2))
 
-    instr_surface = fontObj.render('Press ESCAPE to resume', True, BLACK)
+    instr_surface = fontObj.render('Press SPACE to resume', True, BLACK)
     screen.blit(instr_surface, (WINDOW_WIDTH // 2 - instr_surface.get_width() // 2, 400))    
     pygame.display.update()
     clock.tick(60)

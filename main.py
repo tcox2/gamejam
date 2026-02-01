@@ -168,6 +168,10 @@ def game():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                scene = 'pause'
+                return
 
     # key handling
     keys = pygame.key.get_pressed()
@@ -184,9 +188,7 @@ def game():
             if mask_count <= 2:
                 suppliers.append(Supplier(player.x, -SUPPLIER_HEIGHT, 3))
 
-    if keys[K_ESCAPE]:
-        scene = 'pause'
-        return
+    # ESC handled in the event loop above to reliably catch single presses
     
     if player.x < BORDERS:
         player.x = BORDERS

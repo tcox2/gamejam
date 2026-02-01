@@ -224,8 +224,6 @@ def game():
     time_in_seconds = (time - game_start_time) / 1_000
     speed = time_in_seconds // 60
     speed = speed + 1
-    if speed > 4:
-        speed = 4
 
     remove_guests = []
     for guest in guests:

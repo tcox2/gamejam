@@ -246,7 +246,7 @@ def game():
     for vaccine in vaccines:
         screen.blit(VACCINE_IMAGE, (vaccine.rect.x - VACCINE_WIDTH / 2, vaccine.rect.y - VACCINE_HEIGHT / 2))
 
-    for guest in guests:
+    for guest in  guests:
         if guest.state == "without_mask":
             screen.blit(GUEST_IMAGE, (guest.rect.x - GUEST_WIDTH / 2, guest.rect.y - GUEST_HEIGHT / 2))
         if guest.state == "with_mask":

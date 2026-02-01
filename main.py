@@ -228,7 +228,7 @@ def game():
         print(random_symptom)
         if random_symptom > 80:
             pygame.mixer.Sound.play(fx_cough)
-        elif random_symptom > 60:
+        elif random_symptom >  60:
             pygame.mixer.Sound.play(fx_sneeze)
 
 

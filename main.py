@@ -237,7 +237,7 @@ def game():
         guests.remove(guest)
 
     time_since_last_guest: int = time - last_time_new_guest_visits
-    if time_since_last_guest > AFTER_WHAT_TIME_NEW_GUEST_VISITS:
+    if time_since_last_guest > (AFTER_WHAT_TIME_NEW_GUEST_VISITS / speed):
         guests.append(Guest(random.randint(BORDERS, WINDOW_WIDTH - BORDERS - GUEST_WIDTH), 0, 1))
         last_time_new_guest_visits = time
         random_symptom = random.randint(0, 100)
@@ -284,7 +284,7 @@ def game():
         if guest.rect.colliderect(DISTANCE_BOX):
             if guest.state == "without_mask":
                 guest.state = "sick"
-                player_health -= 25
+                player_health -= 50
                 pygame.mixer.Sound.play(fx_social_distance)
 
     for supplier in suppliers:

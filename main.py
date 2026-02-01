@@ -39,6 +39,7 @@ player_health = 300
 time = 0
 AFTER_WHAT_TIME_NEW_GUEST_VISITS = 3000
 score = 0
+game_start_time = 0 # start time is set on game start
 
 
 PLAYER_IMAGE_WITHOUT_FIRE_UNSCALED = pygame.image.load("without_fire.png")
@@ -126,7 +127,7 @@ global scene
 scene = 'start'
 
 def start():
-    global scene, score, player_health, last_time_new_guest_visits, last_time_new_vaccine_came, mask_count
+    global scene, score, player_health, last_time_new_guest_visits, last_time_new_vaccine_came, mask_count, game_start_time
     # handle events (also listen for keydown to reliably catch presses)
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -137,6 +138,7 @@ def start():
                 # reset game state and switch to game scene
                 score = 0
                 player_health = 300
+                game_start_time = pygame.time.get_ticks()
                 last_time_new_guest_visits = 0
                 last_time_new_vaccine_came = 0
                 mask_count = 10
@@ -231,7 +233,6 @@ def game():
         guests.append(Guest(random.randint(BORDERS, WINDOW_WIDTH - BORDERS - GUEST_WIDTH), 0, 1))
         last_time_new_guest_visits = time
         random_symptom = random.randint(0, 100)
-        print(random_symptom)
         if random_symptom > 80:
             pygame.mixer.Sound.play(fx_cough)
         elif random_symptom >  60:
@@ -312,6 +313,13 @@ def game():
         (255, 255, 255)  # text color
     )
     screen.blit(score_surface, (10, 100))
+
+    time_surface = fontObj.render(
+        f"Time: {(time - game_start_time) // 1_000}",
+        True,  # antialias
+        (255, 255, 255)  # text color
+    )
+    screen.blit(time_surface, (10, 140))
 
     pygame.display.update()
 

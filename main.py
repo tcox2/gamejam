@@ -39,7 +39,7 @@ player_health = 300
 time = 0
 AFTER_WHAT_TIME_NEW_GUEST_VISITS = 3000
 score = 0
-speed = 0
+speed = 1
 game_start_time = 0 # start time is set on game start
 
 
@@ -117,8 +117,7 @@ PAUSE_IMAGE_UNSCALED = pygame.image.load("game paused.png")
 PAUSE_IMAGE = pygame.transform.scale(PAUSE_IMAGE_UNSCALED, (800, 600))
 
 
-START_IMAGE_UNSCALED = pygame.image.load("instructions.png")
-START_IMAGE = pygame.transform.scale(START_IMAGE_UNSCALED, (800, 600))
+
 
 pygame.display.set_caption('Masketeer')
 fontObj = pygame.font.Font('freesansbold.ttf', 24)
@@ -153,8 +152,13 @@ def start():
                 return
 
     # draw a simple start screen so players know to press SPACE
-    screen.blit(START_IMAGE, (0, 0))
-
+    screen.fill(BLACK)
+    title_surface = fontObj.render('Masketeer', True, WHITE)
+    instr_surface = fontObj.render('Press SPACE to start', True, WHITE)
+    screen.blit(title_surface, (WINDOW_WIDTH // 2 - title_surface.get_width() // 2,
+                                WINDOW_HEIGHT // 2 - 40))
+    screen.blit(instr_surface, (WINDOW_WIDTH // 2 - instr_surface.get_width() // 2,
+                                WINDOW_HEIGHT // 2 + 10))
     pygame.display.update()
     clock.tick(60)
         
@@ -217,6 +221,11 @@ def game():
         projectiles.remove(projectile)
 
     time = pygame.time.get_ticks()
+    time_in_seconds = (time - game_start_time) / 1_000
+    speed = time_in_seconds // 60
+    speed = speed + 1
+    if speed > 4:
+        speed = 4
 
     remove_guests = []
     for guest in guests:
@@ -320,7 +329,7 @@ def game():
     screen.blit(time_surface, (10, 140))
 
     speed_surface = fontObj.render(
-        f"Speed: {speed}",
+        f"Speed: {speed:,.0f}",
         True,  # antialias
         (255, 255, 255)  # text color
     )

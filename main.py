@@ -165,8 +165,8 @@ def start():
 
 def game():
     dt = clock.tick(60)
-    global score, player_health, last_time_new_guest_visits, last_time_new_vaccine_came, mask_count, scene
-    score = score + 1
+    global score, player_health, last_time_new_guest_visits, last_time_new_vaccine_came, mask_count, scene, speed
+    score = score + speed
 
     if player_health <= 0:
         print (f"Your score was {score}!")
@@ -229,7 +229,7 @@ def game():
 
     remove_guests = []
     for guest in guests:
-        guest.rect.y += guest.dy
+        guest.rect.y += guest.dy * speed
         if guest.rect.y > WINDOW_HEIGHT + guest.rect.height:  # hit bottom of screen
             remove_guests.append(guest)
     for guest in remove_guests:

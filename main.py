@@ -197,6 +197,9 @@ def game():
     if keys[K_ESCAPE]:
         scene = 'pause'
         return
+    if keys[K_p]:
+        scene = 'pause'
+        return
     
     if player.x < BORDERS:
         player.x = BORDERS
@@ -336,14 +339,15 @@ def game():
     pygame.display.update()
 
 def pause():
+    global scene
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == KEYDOWN:
-            if event.key == K_ESCAPE:
-                global scene
+        keys = pygame.key.get_pressed()
+        if keys[K_SPACE]:
                 scene = 'game'
+                return
 
     # draw a simple pause screen so players know to press ESCAPE to resume
  

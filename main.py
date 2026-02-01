@@ -111,6 +111,12 @@ vaccines : list[Vaccine] = []
 AFTER_WHAT_TIME_A_NEW_VACCINE_COMES = 40000
 last_time_new_vaccine_came = 0
 
+PAUSE_IMAGE_UNSCALED = pygame.image.load("game paused.png")
+PAUSE_IMAGE = pygame.transform.scale(PAUSE_IMAGE_UNSCALED, (800, 600))
+
+
+
+
 pygame.display.set_caption('Masketeer')
 fontObj = pygame.font.Font('freesansbold.ttf', 24)
 
@@ -320,13 +326,13 @@ def pause():
                 scene = 'game'
 
     # draw a simple pause screen so players know to press ESCAPE to resume
-    screen.fill(BLACK)
-    pause_surface = fontObj.render('Paused', True, WHITE)
-    instr_surface = fontObj.render('Press ESCAPE to resume', True, WHITE)
-    screen.blit(pause_surface, (WINDOW_WIDTH // 2 - pause_surface.get_width() // 2,
-                                WINDOW_HEIGHT // 2 - 40))
-    screen.blit(instr_surface, (WINDOW_WIDTH // 2 - instr_surface.get_width() // 2,
-                                WINDOW_HEIGHT // 2 + 10))
+ 
+
+    screen.blit(PAUSE_IMAGE, (WINDOW_WIDTH // 2 - PAUSE_IMAGE.get_width() // 2,
+                              WINDOW_HEIGHT // 2 - PAUSE_IMAGE.get_height() // 2))
+
+    instr_surface = fontObj.render('Press ESCAPE to resume', True, BLACK)
+    screen.blit(instr_surface, (WINDOW_WIDTH // 2 - instr_surface.get_width() // 2, 400))    
     pygame.display.update()
     clock.tick(60)
     

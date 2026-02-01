@@ -155,7 +155,7 @@ def start():
 
 def game():
     dt = clock.tick(60)
-    global score, player_health, last_time_new_guest_visits, last_time_new_vaccine_came, mask_count
+    global score, player_health, last_time_new_guest_visits, last_time_new_vaccine_came, mask_count, scene
     score = score + 1
 
     if player_health <= 0:
@@ -185,7 +185,7 @@ def game():
                 suppliers.append(Supplier(player.x, -SUPPLIER_HEIGHT, 3))
 
     if keys[K_ESCAPE]:
-        scene = 'start'
+        scene = 'pause'
         return
     
     if player.x < BORDERS:
@@ -309,6 +309,28 @@ def game():
 
     pygame.display.update()
 
+def pause():
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                global scene
+                scene = 'game'
+
+    # draw a simple pause screen so players know to press ESCAPE to resume
+    screen.fill(BLACK)
+    pause_surface = fontObj.render('Paused', True, WHITE)
+    instr_surface = fontObj.render('Press ESCAPE to resume', True, WHITE)
+    screen.blit(pause_surface, (WINDOW_WIDTH // 2 - pause_surface.get_width() // 2,
+                                WINDOW_HEIGHT // 2 - 40))
+    screen.blit(instr_surface, (WINDOW_WIDTH // 2 - instr_surface.get_width() // 2,
+                                WINDOW_HEIGHT // 2 + 10))
+    pygame.display.update()
+    clock.tick(60)
+    
+
 def main():
     global scene
     scene = 'start'
@@ -317,6 +339,10 @@ def main():
             start()
         elif scene == 'game':
             game()
+        elif scene == 'game_over':
+            pass
+        elif scene == 'pause':
+            pause()
     
 
 main()
